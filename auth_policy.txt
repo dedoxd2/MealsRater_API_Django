@@ -1,0 +1,10 @@
+1- URL to rqeuest token of specific user
+    Token
+2- Only authenticated users can craete\update meal rate
+3- Register users
+    URL > Viewset > Serializer  model = User default django
+    URL > Viewset > Serializer  model = User custom abstract
+    
+4- general security checks
+
+
