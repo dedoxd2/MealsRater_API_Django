@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from decouple import config
 from pathlib import Path
+from dj_database_url import parse as dburl
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,8 +28,8 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '.localhost', 'mealraterer.herokuapp.com']
 
 # Application definition
 
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     'api',
     'rest_framework.authtoken',
     'rest_framework',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -50,12 +53,20 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = ["https://example.com",
+                        "https://sub.example.com",
+                        "https://localhost:8080",
+                        "https://127.0.0.1:9000",
+                        ]
 
 ROOT_URLCONF = 'mealrater.urls'
 
@@ -81,12 +92,22 @@ WSGI_APPLICATION = 'mealrater.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': config('DATABASE_URL', default=default_dburl, cast=dburl),
 }
+
+
+# Original DB
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -124,6 +145,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'statics')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
